@@ -1,0 +1,63 @@
+1 Ans:- Creating folder in hadoop:-
+			hadoop -fs mkdir /user/hadoopTraining
+			hadoop -fs mkdir /user/hadoopTraining/Assignment1
+			hadoop -fs mkdir /user/hadoopTraining/Assignment1/input
+			
+		Copying file from local to hadoop:-
+			hadoop fs -copyFromLocal /home/cloudera/Downloads/bhav040416_080416.csv /user/hadoopTraining/Assignment1/input/
+			
+2 Ans:- Creating Databse in Hive:-
+			create database AKdatabase;
+			
+		Using Database:-
+			use AKdatabase;
+			
+		Creating table and loading data into table:-
+			create external table stockTrdData(
+				symbol string,
+				series string,
+				price_open float,
+				price_high float,
+				price_low float,
+				price_close float,
+				price_last float,
+				price_prevclose float,
+				total_trdqty int,
+				total_trdval float,
+				timestamp string,
+				total_trades int,
+				isin string
+			)
+			row format delimited fields terminated by ','
+			location '/user/hadoopTraining/Assignment1/input/';
+			
+		Validating loaded data:-
+			select * from stockTrdData limit 100;
+			
+3 Ans:-	HQL for this :-
+			insert overwrite directory '/user/hadoopTraining/Assignment1/output/'
+			row format delimited fields terminated by ','
+			stored as textfile
+			select symbol,series, max(total_trdval) as max_trd_val 
+			from stockTrdData 
+			group by symbol,series;
+			
+		Validating the output file:-
+			hadoop fs -cat /user/hadoopTraining/Assignment1/output/000000_0
+			
+4 Ans:- HQL for this :-
+			insert overwrite directory '/user/hadoopTraining/Assignment1/output/'
+			row format delimited fields terminated by ','
+			stored as textfile
+			select symbol,series, max(total_trdqty) as max_trd_qty 
+			from stockTrdData 
+			group by symbol,series;
+			
+		Validating the output file:-
+			hadoop fs -cat /user/hadoopTraining/Assignment1/output/000000_0
+			
+5 Ans:-	HQL for this:-
+			select symbol, max(total_trdqty) as max_trd_qty 
+			from stockTrdData 
+			where series='EQ' 
+			group by symbol;

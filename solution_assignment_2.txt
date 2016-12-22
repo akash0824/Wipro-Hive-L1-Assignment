@@ -1,0 +1,65 @@
+1 Ans:-	Creating database:-
+			create database AKdatabase2;
+			
+		Using database:-
+			use AKdatabase2;
+		
+		Creating blank table:-
+			create table userdata(
+				userid int,
+				age tinyint,
+				gender string,
+				occupation string,
+				zipcode string
+			)
+			row format delimited 
+			fields terminated by '|';
+			
+2 Ans:-	Loading data from external file to a blank table:-
+			load data local inpath '/home/cloudera/Downloads/u.user' overwrite into table userdata;
+			
+		Verifying the load:-
+			select * from userdata limit 100;
+			
+3 Ans:-	Creating partitioned table:-
+			create table userdata_par(
+				userid int,
+				age tinyint,
+				occupation string,
+				zipcode string
+			)
+			partitioned by (gender string)
+			row format delimited 
+			fields terminated by '|';
+			
+		Inserting data:-
+			insert overwrite table userdata_par
+			partition (gender='M') 
+			select userid, age, occupation, zipcode 
+			from userdata 
+			where gender='M';			
+			
+4 Ans:-	HDFS command for listing partitioned file:-
+			hadoop fs -ls /user/hive/warehouse/akdatabase2.db/userdata_par
+			
+5 Ans:- For Avg age of female audience? 
+			Non Partitioned:-
+				select avg(age) from userdata where gender='F';
+				
+				Time taken:- 33.587 seconds
+				
+			Partitioned:-
+				select avg(age) from userdata_par where gender='F';
+				
+				Time taken:- 32.556 seconds
+		
+		For Avg age of male audience? 
+			Non Partitioned:-
+				select avg(age) from userdata where gender='M';
+				
+				Time taken:- 34.476 seconds
+				
+			Partitioned:-
+				select avg(age) from userdata_par where gender='M';
+				
+				Time taken:- 33.456 seconds

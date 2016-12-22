@@ -1,0 +1,53 @@
+1 Ans:-	Creating blank table:-
+			create table rating(
+				userid int, 
+				itemid int, 
+				rating tinyint, 
+				timestamp int
+			)
+			row format delimited
+			fields terminated by '\t';
+			
+		Loading data:-
+			load data loacl inpath '/home/cloudera/Downloads/u.data' overwrite into table rating;
+			
+		Validating the load:-
+			select * from rating limit 100;
+			
+2 Ans:-	Creating bucked table:-
+			create table rating_bucket(
+				userid int, 
+				itemid int,
+				rating tinyint, 
+				timestamp int
+			)
+			clustered by (userid) into 3 buckets
+			row format delimited
+			fields terminated by '\t';
+			
+		Inserting data to bucketed table:-
+			from rating insert overwrite table rating_bucket
+			select userid, itemid, rating, timestamp;
+			
+3 Ans:-	HQL for this:-
+			select count(*) 
+			from rating_bucket 
+			tablesample( bucket 1 out of 3 on userid);
+			
+			select count(*) 
+			from rating_bucket 
+			tablesample( bucket 2 out of 3 on userid);
+			
+			select count(*) 
+			from rating_bucket 
+			tablesample( bucket 3 out of 3 on userid);
+			
+4 Ans:-	HQL for this:-
+			select avg(rating) 
+			from rating_bucket 
+			tablesample(5 percent);
+			
+5 Ans:- HQL for this:-
+			select avg(rating) 
+			from rating_bucket 
+			tablesample( bucket 1 out of 3 on userid); 
